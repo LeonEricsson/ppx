@@ -1,12 +1,7 @@
 from src.ppo import make_train_envparams, Hparams, ActorCriticTuple
 import jax
 import pickle
-import jax.numpy as jnp
-from envs.wrappers import FrameStackWrapper
-from evaluate_agent import evaluate_model
-import matplotlib.pyplot as plt
-from envs.subhunt import SubHunt
-import envs.subhunt
+from src.utils import evaluate_model
 
 if __name__ == "__main__":
     config = {
@@ -15,7 +10,7 @@ if __name__ == "__main__":
         "TOTAL_TIMESTEPS": 1e5,
         "UPDATE_EPOCHS": 5,
         "NUM_MINIBATCHES": 32,
-        "ENV_NAME": SubHunt,
+        "ENV_NAME": None, # Environment
         "NORMALIZE_OBS": False,  # If this is used, we must save the resulting normalization
         "ANNEAL_LR": True,
     }
@@ -34,11 +29,8 @@ if __name__ == "__main__":
     )
     print("Using hparams:\n", hparams)
 
-    env = SubHunt()
-    env = FrameStackWrapper(env)
+    env = None
     env_params = env.default_params
-    env_params = env_params.replace(random_waypoints=False)
-    print(f"Pattern: {envs.subhunt.pattern_index}")
 
     network = ActorCriticTuple(
         (

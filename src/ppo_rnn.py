@@ -4,11 +4,6 @@ import numpy as np
 import optax
 from typing import NamedTuple
 from flax.training.train_state import TrainState
-import gymnax
-from envs.wrappers import (
-    LogWrapper,
-    CartPoleNoVelWrapper
-)
 from src.policies import ActorCriticRNN, ScannedRNN
 from src.ppo import Hparams
 
@@ -30,9 +25,7 @@ def make_train(config):
     config["MINIBATCH_SIZE"] = (
         config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
     )
-    env, env_params = gymnax.make(config["ENV_NAME"])
-    env = CartPoleNoVelWrapper(env)
-    env = LogWrapper(env)
+    env, env_params = config["ENV_NAME"](), None
 
     def train(hparams: Hparams, rng):
 

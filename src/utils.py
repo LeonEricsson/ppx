@@ -1,6 +1,5 @@
 import jax
 import jax.numpy as jnp
-from gymnax.environments.environment import Environment
 from typing import Callable
 
 
@@ -11,7 +10,7 @@ def get_params_at_index(params, idx):
 def evaluate_model(
     network_apply: Callable,
     params,
-    env: Environment,
+    env,
     n_trials: int,
     key: jax.Array,
     env_params=None,
@@ -58,7 +57,7 @@ def evaluate_model(
 
     seeds = jax.random.split(key, n_trials)
 
-    episode_rewards, goal_reached = jax.jit(jax.vmap(rollout))(seeds)
+    episode_rewards, _ = jax.jit(jax.vmap(rollout))(seeds)
 
     won = jnp.sum(episode_rewards != -1) / n_trials
 
