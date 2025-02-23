@@ -17,6 +17,17 @@ class Transition(NamedTuple):
     obs: jnp.ndarray
     info: jnp.ndarray
 
+@struct.dataclass
+class Hparams:
+    lr: jnp.double
+    gamma: jnp.double
+    gae_lambda: jnp.double
+    clip_eps: jnp.double
+    ent_coef: jnp.double
+    vf_coef: jnp.double
+    max_grad_norm: jnp.double
+
+
 def make_train(config):
 
     config["NUM_UPDATES"] = int(
@@ -241,55 +252,3 @@ def make_train(config):
 
     return train
 
-
-@struct.dataclass
-class Hparams:
-    lr: jnp.double
-    gamma: jnp.double
-    gae_lambda: jnp.double
-    clip_eps: jnp.double
-    ent_coef: jnp.double
-    vf_coef: jnp.double
-    max_grad_norm: jnp.double
-
-
-def get_hparam_at(hparams, index):
-    return jnp.array(jax.tree_util.tree_flatten(hparams)[0])[:, index]
-
-
-def sample_hparams(key):
-
-    key, _key = jax.random.split(key)
-    lr = jnp.exp(jax.random.uniform(_key, minval=jnp.log(1e-6), maxval=jnp.log(1e-1)))
-
-    key, _key = jax.random.split(key)
-    gamma = jax.random.choice(_key, jnp.array([0.9, 0.95, 0.98, 0.99, 0.999]))
-
-    key, _key = jax.random.split(key)
-    gae_lambda = jax.random.choice(
-        _key, jnp.array([0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
-    )
-
-    key, _key = jax.random.split(key)
-    clip_eps = jax.random.choice(_key, jnp.array([0.1, 0.2, 0.3, 0.4]))
-
-    key, _key = jax.random.split(key)
-    ent_coef = jnp.exp(
-        jax.random.uniform(_key, minval=jnp.log(1e-8), maxval=jnp.log(1e-1))
-    )
-
-    key, _key = jax.random.split(key)
-    vf_coef = jax.random.uniform(_key, minval=0, maxval=1.0)
-
-    key, _key = jax.random.split(key)
-    max_grad_norm = jax.random.choice(_key, jnp.array([0.3, 0.5, 0.7, 1.0, 2.0, 5.0]))
-
-    return Hparams(
-        lr=lr,
-        gamma=gamma,
-        gae_lambda=gae_lambda,
-        clip_eps=clip_eps,
-        ent_coef=ent_coef,
-        vf_coef=vf_coef,
-        max_grad_norm=max_grad_norm,
-    )

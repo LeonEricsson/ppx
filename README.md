@@ -1,2 +1,2 @@
 # ppx
-ppo in jax 
+simple ppo in jax - single device; no `shard_map`, spmd ... 

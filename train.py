@@ -1,4 +1,4 @@
-from src.ppo import make_train_envparams, Hparams, ActorCriticTuple
+from src.ppo import make_train, Hparams, ActorCriticTuple
 import jax
 import pickle
 from src.utils import evaluate_model
@@ -40,9 +40,9 @@ if __name__ == "__main__":
         activation="relu",
     )
 
-    train = jax.jit(make_train_envparams(config))
+    train = jax.jit(make_train(config))
 
-    outs = jax.block_until_ready(train(hparams, key, env_params))
+    outs = jax.block_until_ready(train(hparams, key))
 
     network_params = outs["runner_state"][0].params
 
